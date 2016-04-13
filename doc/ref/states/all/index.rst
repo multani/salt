@@ -55,6 +55,7 @@ state modules
     cloud
     cmd
     composer
+    consul
     cron
     cyg
     ddns
