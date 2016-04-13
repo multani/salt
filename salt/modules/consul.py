@@ -4,6 +4,18 @@ Interact with Consul
 
 https://www.consul.io
 
+In order to interact with Consul, you need to specify on which URL it can be
+contacted. You can either pass it to each of your call or use the :mod:`Salt
+configuration system <salt.modules.config>`, by setting the ``consul.url`` or
+``consul:url`` key to the appropriate value, ie.:
+
+.. code-block:: yaml
+
+    # From a pillar file
+    consul:
+        url:
+            http://consul:8500
+
 '''
 
 # Import Python Libs
