@@ -111,3 +111,19 @@ class ConsulKVStateTest(integration.ModuleCase,
 
         res = self.run_function('consul.get', consul_url=CONSUL_URL, key=key)
         self.assertFalse(res['res'])
+
+
+
+
+@skipIf(
+    CONSUL_URL is None,
+    'Define the environment variable SALTSTACK_TEST_CONSUL_URL to a Consul'
+    'instance to be used for testing, such as http://localhost:8500.'
+)
+class ConsulACLStateTest(integration.ModuleCase,
+                         integration.SaltReturnAssertsMixIn):
+    @destructiveTest
+    def setUp(self):
+        super(ConsulACLStateTest, self).setUp()
+        res = self.run_function('consul.delete', consul_url=CONSUL_URL,
+                                key="/", recurse=True)
