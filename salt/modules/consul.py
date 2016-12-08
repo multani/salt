@@ -1984,6 +1984,7 @@ def acl_create(consul_url=None, **kwargs):
     Create a new ACL token.
 
     :param consul_url: The Consul server URL.
+    :param management_token: A token with management permission.
     :param name: Meaningful indicator of the ACL's purpose.
     :param type: Type is either client or management. A management
                  token is comparable to a root user and has the
@@ -2024,7 +2025,11 @@ def acl_create(consul_url=None, **kwargs):
     res = _query(consul_url=consul_url,
                  data=json.dumps(data),
                  method='PUT',
-                 function=function)
+                 function=function,
+                 query_params={
+                     'token': kwargs['management_token'],
+                 },
+                )
 
     if res['res']:
         ret['res'] = True
@@ -2254,6 +2259,9 @@ def acl_list(consul_url=None, **kwargs):
     function = 'acl/list'
     ret = _query(consul_url=consul_url,
                  method='GET',
+                 query_params={
+                     'token': kwargs['management_token'],
+                 },
                  function=function)
     return ret
 
