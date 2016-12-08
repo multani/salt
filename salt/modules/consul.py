@@ -2032,8 +2032,8 @@ def acl_create(consul_url=None, **kwargs):
         ret['message'] = 'ACL {0} created.'.format(kwargs['name'])
     else:
         ret['res'] = False
-        ret['message'] = ('Removing Catalog '
-                          'item {0} failed.'.format(kwargs['name']))
+        ret['message'] = ('ACL {0} creation failed: {1}'.format(kwargs['name'],
+                                                                res['data']))
     return ret
 
 
