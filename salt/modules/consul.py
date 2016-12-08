@@ -2021,6 +2021,9 @@ def acl_create(consul_url=None, **kwargs):
     if 'rules' in kwargs:
         data['Rules'] = kwargs['rules']
 
+    if 'id' in kwargs:
+        data['ID'] = kwargs['id']
+
     function = 'acl/create'
     res = _query(consul_url=consul_url,
                  data=json.dumps(data),
