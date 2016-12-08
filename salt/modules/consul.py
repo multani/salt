@@ -100,6 +100,9 @@ def _query(function,
     elif result.get('status', None) == salt.ext.six.moves.http_client.NOT_FOUND:
         ret['data'] = 'Key not found.'
         ret['res'] = False
+    elif result.get('status', None) == salt.ext.six.moves.http_client.UNAUTHORIZED:
+        ret['data'] = 'Unauthorized access.'
+        ret['res'] = False
     else:
         result = result.json()
         if result:
