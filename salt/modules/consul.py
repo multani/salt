@@ -324,10 +324,9 @@ def put(consul_url=None, key=None, value=None, **kwargs):
 
     data = value
     function = 'kv/{0}'.format(key)
-    method = 'PUT'
     ret = _query(consul_url=consul_url,
                  function=function,
-                 method=method,
+                 method="PUT",
                  data=data,
                  query_params=query_params)
 
@@ -2179,7 +2178,7 @@ def acl_info(consul_url=None, **kwargs):
 
     function = 'acl/info/{0}'.format(kwargs['id'])
     ret = _query(consul_url=consul_url,
-                 method='PUT',
+                 method='GET',
                  function=function)
     return ret
 
@@ -2254,7 +2253,7 @@ def acl_list(consul_url=None, **kwargs):
 
     function = 'acl/list'
     ret = _query(consul_url=consul_url,
-                 method='PUT',
+                 method='GET',
                  function=function)
     return ret
 
