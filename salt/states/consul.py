@@ -43,17 +43,10 @@ def key_set(name, value, consul_url=None):
           consul.key_set:
             - value: foo
 
-    More complex structures can also be set:
+    Be aware that Consul only stores string values, so you will need to
+    serialize your values into a string format, such as JSON or YAML. You can
+    use the ``| json`` or ``| yaml`` filter for this.
 
-    .. code-block:: yaml
-
-        /foo/bar/baz:
-          consul.key_set:
-            - value:
-                something:
-                    - bar
-                    - 1
-                something else: true
     """
 
     ret = {
@@ -63,8 +56,13 @@ def key_set(name, value, consul_url=None):
         'changes': {}
     }
 
+    if not isinstance(value, basestring):
+        ret['comment'] = "The value for key '{0}' must be a string".format(name)
+        ret['result'] = False
+        return ret
+
     res = __salt__['consul.get'](consul_url=consul_url, key=name, decode=True)
-    old_value = json.loads(res['data'][0]['Value']) if res['res'] else None
+    old_value = res['data'][0]['Value'] if res['res'] else None
 
     if __opts__['test']:
         if old_value is None: # no key

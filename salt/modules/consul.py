@@ -81,10 +81,6 @@ def _query(function,
     base_url = _urljoin(consul_url, '{0}/'.format(api_version))
     url = _urljoin(base_url, function, False)
 
-    if data is None:
-        data = {}
-    data = json.dumps(data)
-
     result = salt.utils.http.query(
         url,
         method=method,
@@ -264,6 +260,9 @@ def put(consul_url=None, key=None, value=None, **kwargs):
 
     if not key:
         raise SaltInvocationError('Required argument "key" is missing.')
+
+    if not isinstance(value, basestring):
+        raise SaltInvocationError('The value has to be a string.')
 
     query_params = {}
 

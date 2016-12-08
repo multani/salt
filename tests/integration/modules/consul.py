@@ -31,6 +31,16 @@ CONSUL_URL = os.environ.get('SALTSTACK_TEST_CONSUL_URL')
 )
 class ConsulKVModuleTest(integration.ModuleCase,
                          integration.SaltReturnAssertsMixIn):
+
+    def assertRequireValueString(self, msg):
+        self.assertTrue(isinstance(msg, str))
+
+        error_headline = msg.split('\n')[0]
+        self.assertTrue(error_headline.startswith(
+            "ERROR executing 'consul.put': The value has to be a string."),
+            error_headline)
+
+
     @destructiveTest
     def setUp(self):
         super(ConsulKVModuleTest, self).setUp()
@@ -59,7 +69,18 @@ class ConsulKVModuleTest(integration.ModuleCase,
         res = self.run_function('consul.get', consul_url=CONSUL_URL,
                                 key=key, decode=True)
         self.assertTrue(res['res'])
-        self.assertEqual(value, json.loads(res['data'][0]['Value']))
+        self.assertEqual(value, res['data'][0]['Value'])
+
+    @destructiveTest
+    def test_kv_fail_put_non_string_value(self):
+        """Can't set a non-string value"""
+
+        key = "test/foo"
+        value = 42
+
+        res = self.run_function('consul.put', consul_url=CONSUL_URL,
+                                key=key, value=value)
+        self.assertRequireValueString(res)
 
     @destructiveTest
     def test_kv_put_get_complex_value(self):
@@ -70,8 +91,11 @@ class ConsulKVModuleTest(integration.ModuleCase,
 
         res = self.run_function('consul.put', consul_url=CONSUL_URL,
                                 key=key, value=value)
-        self.assertTrue(res['res'])
+        self.assertRequireValueString(res)
 
+        # If we convert the value into JSON, we can load/restore it.
+        res = self.run_function('consul.put', consul_url=CONSUL_URL,
+                                key=key, value=json.dumps(value))
         res = self.run_function('consul.get', consul_url=CONSUL_URL,
                                 key=key, decode=True)
         self.assertTrue(res['res'])

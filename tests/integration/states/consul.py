@@ -52,7 +52,7 @@ class ConsulKVStateTest(integration.ModuleCase,
         res = self.run_function('consul.get', consul_url=CONSUL_URL,
                                 key=key, decode=True)
         self.assertTrue(res['res'])
-        self.assertEqual(value, json.loads(res['data'][0]['Value']))
+        self.assertEqual(value, res['data'][0]['Value'])
 
         # Change the value to something else
         value = "some other bar"
@@ -66,30 +66,48 @@ class ConsulKVStateTest(integration.ModuleCase,
         res = self.run_function('consul.get', consul_url=CONSUL_URL,
                                 key=key, decode=True)
         self.assertTrue(res['res'])
-        self.assertEqual(value, json.loads(res['data'][0]['Value']))
+        self.assertEqual(value, res['data'][0]['Value'])
 
 
     @destructiveTest
-    def test_kv_set_complex_value(self):
-        """Set a Consul key with a complex value from a state"""
+    def test_kv_set_complex_value_not_formatted(self):
+        """Set a Consul key with a complex, non-formatted value from a state"""
 
         key = "test/bar"
         value = {'something': 0, 'really': ['interesting', False]}
 
         ret = self.run_state('consul.key_set', name=key, value=value,
                              consul_url=CONSUL_URL)
-        self.assertSaltTrueReturn(ret)
-        self.assertSaltStateChangesEqual(ret, {'new': value, 'old': None})
+        self.assertSaltFalseReturn(ret)
+        self.assertSaltStateChangesEqual(ret, {})
+        self.assertSaltCommentRegexpMatches(
+            ret, "The value for key 'test/bar' must be a string")
 
         res = self.run_function('consul.get', consul_url=CONSUL_URL,
                                 key=key, decode=True)
-        self.assertTrue(res['res'])
-        self.assertEqual(value, json.loads(res['data'][0]['Value']))
+        self.assertFalse(res['res']) # No value
+        self.assertEqual("Key not found.", res['data'])
 
-        ret = self.run_state('consul.key_set', name=key, value=value,
-                             consul_url=CONSUL_URL)
-        self.assertSaltTrueReturn(ret)
-        self.assertSaltStateChangesEqual(ret, {})
+    #@destructiveTest
+    #def test_kv_set_complex_value_json(self):
+        #"""Set a Consul key with a complex value as JSON from a state"""
+
+        #key = "test/bar"
+        #value = {'something': 0, 'really': ['interesting', False]}
+
+        #ret = self.run_state('consul.key_set', name=key, value=value,
+                             #formatter="json",
+                             #consul_url=CONSUL_URL)
+        #self.assertSaltTrueReturn(ret)
+        #self.assertSaltStateChangesEqual(ret, {'new': json.dumps(value), 'old': None})
+
+
+        #res = self.run_function('consul.get', consul_url=CONSUL_URL,
+                                #key=key, decode=True)
+
+        #self.assertTrue(res['res'])
+        #self.assertIsInstance(res['data'][0]['Value'], basestring)
+        #self.assertEqual(value, json.loads(res['data'][0]['Value']))
 
 
     @destructiveTest
