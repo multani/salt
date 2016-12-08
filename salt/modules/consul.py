@@ -743,7 +743,7 @@ def agent_check_register(consul_url=None, **kwargs):
     res = _query(consul_url=consul_url,
                  function=function,
                  method='PUT',
-                 data=data)
+                 data=json.dumps(data))
     if res['res']:
         ret['res'] = True
         ret['message'] = ('Check {0} added to agent.'.format(kwargs['name']))
@@ -1045,7 +1045,7 @@ def agent_service_register(consul_url=None, **kwargs):
     res = _query(consul_url=consul_url,
                  function=function,
                  method='PUT',
-                 data=data)
+                 data=json.dumps(data))
     if res['res']:
         ret['res'] = True
         ret['message'] = 'Service {0} registered on agent.'.format(kwargs['name'])
@@ -1071,7 +1071,6 @@ def agent_service_deregister(consul_url=None, serviceid=None):
 
     '''
     ret = {}
-    data = {}
     if not consul_url:
         consul_url = _get_config()
         if not consul_url:
@@ -1086,8 +1085,7 @@ def agent_service_deregister(consul_url=None, serviceid=None):
     function = 'agent/service/deregister/{0}'.format(serviceid)
     res = _query(consul_url=consul_url,
                  function=function,
-                 method='PUT',
-                 data=data)
+                 method='PUT')
     if res['res']:
         ret['res'] = True
         ret['message'] = 'Service {0} removed from agent.'.format(serviceid)
@@ -1235,7 +1233,7 @@ def session_create(consul_url=None, **kwargs):
     res = _query(consul_url=consul_url,
                  function=function,
                  method='PUT',
-                 data=data)
+                 data=json.dumps(data))
 
     if res['res']:
         ret['res'] = True
@@ -1482,7 +1480,7 @@ def catalog_register(consul_url=None, **kwargs):
     res = _query(consul_url=consul_url,
                  function=function,
                  method='PUT',
-                 data=data)
+                 data=json.dumps(data))
     if res['res']:
         ret['res'] = True
         ret['message'] = ('Catalog registration '
@@ -1544,7 +1542,7 @@ def catalog_deregister(consul_url=None, **kwargs):
     res = _query(consul_url=consul_url,
                  function=function,
                  method='PUT',
-                 data=data)
+                 data=json.dumps(data))
     if res['res']:
         ret['res'] = True
         ret['message'] = 'Catalog item {0} removed.'.format(kwargs['node'])
@@ -2022,7 +2020,7 @@ def acl_create(consul_url=None, **kwargs):
 
     function = 'acl/create'
     res = _query(consul_url=consul_url,
-                 data=data,
+                 data=json.dumps(data),
                  method='PUT',
                  function=function)
 
@@ -2087,7 +2085,7 @@ def acl_update(consul_url=None, **kwargs):
 
     function = 'acl/update'
     res = _query(consul_url=consul_url,
-                 data=data,
+                 data=json.dumps(data),
                  method='PUT',
                  function=function)
 
@@ -2118,7 +2116,6 @@ def acl_delete(consul_url=None, **kwargs):
 
     '''
     ret = {}
-    data = {}
     if not consul_url:
         consul_url = _get_config()
         if not consul_url:
@@ -2134,7 +2131,6 @@ def acl_delete(consul_url=None, **kwargs):
 
     function = 'acl/delete/{0}'.format(kwargs['id'])
     res = _query(consul_url=consul_url,
-                 data=data,
                  method='PUT',
                  function=function)
 
@@ -2165,7 +2161,6 @@ def acl_info(consul_url=None, **kwargs):
 
     '''
     ret = {}
-    data = {}
     if not consul_url:
         consul_url = _get_config()
         if not consul_url:
@@ -2181,7 +2176,6 @@ def acl_info(consul_url=None, **kwargs):
 
     function = 'acl/info/{0}'.format(kwargs['id'])
     ret = _query(consul_url=consul_url,
-                 data=data,
                  method='PUT',
                  function=function)
     return ret
@@ -2204,7 +2198,6 @@ def acl_clone(consul_url=None, **kwargs):
 
     '''
     ret = {}
-    data = {}
     if not consul_url:
         consul_url = _get_config()
         if not consul_url:
@@ -2220,7 +2213,6 @@ def acl_clone(consul_url=None, **kwargs):
 
     function = 'acl/clone/{0}'.format(kwargs['id'])
     res = _query(consul_url=consul_url,
-                 data=data,
                  method='PUT',
                  function=function)
     if res['res']:
@@ -2249,7 +2241,6 @@ def acl_list(consul_url=None, **kwargs):
 
     '''
     ret = {}
-    data = {}
     if not consul_url:
         consul_url = _get_config()
         if not consul_url:
@@ -2258,14 +2249,8 @@ def acl_list(consul_url=None, **kwargs):
             ret['res'] = False
             return ret
 
-    if 'id' not in kwargs:
-        ret['message'] = 'Required parameter "id" is missing.'
-        ret['res'] = False
-        return ret
-
     function = 'acl/list'
     ret = _query(consul_url=consul_url,
-                 data=data,
                  method='PUT',
                  function=function)
     return ret
